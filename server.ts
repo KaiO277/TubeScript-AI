@@ -14,45 +14,42 @@ async function startServer() {
 
   // API Route for transcription
   // This is where the user can "attach" their real API logic
-  app.post("/api/transcript", async (req, res) => {
-    const { videoId } = req.body;
+  app.post("/transcript", async (req, res) => {
+    const { url } = req.body; // ✅ nhận url
 
-    if (!videoId) {
-      return res.status(400).json({ error: "Video ID is required" });
+    if (!url) {
+      return res.status(400).json({ error: "YouTube URL is required" });
     }
 
-    console.log(`Received request for video ID: ${videoId}`);
+    console.log(`Received request for URL: ${url}`);
 
     try {
-      console.log(`Calling external API: http://127.0.0.1:8000/transcript for videoId: ${videoId}`);
-      
       const externalResponse = await fetch("http://127.0.0.1:8000/transcript", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ videoId }),
+        body: JSON.stringify({ url }), // ✅ gửi url cho FastAPI
       });
 
       if (!externalResponse.ok) {
         const errorText = await externalResponse.text();
-        console.error(`External API error: ${externalResponse.status} - ${errorText}`);
-        throw new Error(`External API returned ${externalResponse.status}`);
+        console.error("FastAPI error:", errorText);
+        return res.status(externalResponse.status).json({
+          error: "FastAPI error",
+          details: errorText,
+        });
       }
 
       const data = await externalResponse.json();
-      
-      // Assuming the external API returns { transcript: "..." }
-      res.json({ 
-        transcript: data.transcript || "No transcript returned from API",
-        videoId: videoId,
-        status: "success"
-      });
+
+      res.json(data); // trả nguyên response FastAPI
+
     } catch (error) {
-      console.error("Error calling external API:", error);
-      res.status(500).json({ 
-        error: "Failed to fetch transcript from external API",
-        details: error instanceof Error ? error.message : String(error)
+      console.error("Error calling FastAPI:", error);
+      res.status(500).json({
+        error: "Failed to fetch transcript",
+        details: error instanceof Error ? error.message : String(error),
       });
     }
   });
