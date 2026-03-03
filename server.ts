@@ -24,33 +24,36 @@ async function startServer() {
     console.log(`Received request for video ID: ${videoId}`);
 
     try {
-      // MOCK RESPONSE: In a real app, you would call an external API or use a library here
-      // Example: const transcript = await someTranscriptionService(videoId);
+      console.log(`Calling external API: http://127.0.0.1:8000/transcript for videoId: ${videoId}`);
       
-      // Simulating a delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const externalResponse = await fetch("http://127.0.0.1:8000/transcript", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ videoId }),
+      });
 
-      const mockTranscript = `This is a sample transcript for YouTube video ID: ${videoId}. 
+      if (!externalResponse.ok) {
+        const errorText = await externalResponse.text();
+        console.error(`External API error: ${externalResponse.status} - ${errorText}`);
+        throw new Error(`External API returned ${externalResponse.status}`);
+      }
 
-In this video, we discuss how AI is changing the landscape of content creation. 
-TubeScript allows users to quickly get text versions of their favorite videos.
-
-Key points covered:
-1. Introduction to AI Transcription.
-2. How to use TubeScript.
-3. Benefits of searchable video content.
-4. Future updates and roadmap.
-
-Thank you for watching!`;
-
+      const data = await externalResponse.json();
+      
+      // Assuming the external API returns { transcript: "..." }
       res.json({ 
-        transcript: mockTranscript,
+        transcript: data.transcript || "No transcript returned from API",
         videoId: videoId,
         status: "success"
       });
     } catch (error) {
-      console.error("Error fetching transcript:", error);
-      res.status(500).json({ error: "Failed to fetch transcript" });
+      console.error("Error calling external API:", error);
+      res.status(500).json({ 
+        error: "Failed to fetch transcript from external API",
+        details: error instanceof Error ? error.message : String(error)
+      });
     }
   });
 
