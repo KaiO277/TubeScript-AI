@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Header } from './components/Header';
-import { Hero } from './components/Hero';
-import { TranscriptResult } from './components/TranscriptResult';
-import { FeatureGrid } from './components/FeatureGrid';
 import { Footer } from './components/Footer';
+import { Home } from './pages/Home';
+import { Login } from './pages/Login';
 
 export default function App() {
   const [url, setUrl] = useState('');
@@ -75,31 +75,17 @@ const handleGetTranscript = async () => {
     }
   };
 
+ main
   return (
-    <div className="min-h-screen bg-[#0a0f18] text-slate-200 font-sans selection:bg-blue-500/30">
-      <Header />
-
-      <main className="flex flex-col items-center">
-        <Hero 
-          url={url} 
-          setUrl={setUrl} 
-          onGetTranscript={handleGetTranscript} 
-          loading={loading} 
-          error={error} 
-        />
-
-        <TranscriptResult 
-          transcript={transcript} 
-          loading={loading} 
-          onCopy={handleCopy} 
-          onDownload={handleDownload} 
-          copied={copied} 
-        />
-
-        <FeatureGrid />
-      </main>
-
-      <Footer />
-    </div>
+    <Router>
+      <div className="min-h-screen flex flex-col bg-[#0a0f18] text-slate-200 font-sans selection:bg-blue-500/30">
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+        <Footer />
+      </div>
+    </Router>
   );
 }
