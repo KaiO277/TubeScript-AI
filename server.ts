@@ -14,7 +14,7 @@ async function startServer() {
 
   // API Route for transcription
   // This is where the user can "attach" their real API logic
-  app.post("/api/transcript", async (req, res) => {
+  app.post("/transcript", async (req, res) => {
     const { videoId } = req.body;
 
     if (!videoId) {
