@@ -75,6 +75,7 @@ const handleGetTranscript = async () => {
     }
   };
 
+ main
   return (
     <Router>
       <div className="min-h-screen flex flex-col bg-[#0a0f18] text-slate-200 font-sans selection:bg-blue-500/30">
