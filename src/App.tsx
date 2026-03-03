@@ -18,40 +18,42 @@ export default function App() {
     return (match && match[7].length === 11) ? match[7] : null;
   };
 
-  const handleGetTranscript = async () => {
-    const videoId = extractVideoId(url);
-    
-    if (!videoId) {
-      setError('Please enter a valid YouTube URL');
-      return;
+const handleGetTranscript = async () => {
+  if (!url) {
+    setError('Please enter a valid YouTube URL');
+    return;
+  }
+
+  setError(null);
+  setLoading(true);
+  setTranscript(null);
+
+  try {
+    const response = await fetch('/transcript', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url }), // ✅ GỬI URL thay vì videoId
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error(errText);
+      throw new Error('Failed to fetch transcript');
     }
 
-    setError(null);
-    setLoading(true);
-    setTranscript(null);
+    const data = await response.json();
+    console.log(data);
+    setTranscript(data.transcript);
 
-    try {
-      const response = await fetch('/api/transcript', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ videoId }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch transcript');
-      }
-
-      const data = await response.json();
-      setTranscript(data.transcript);
-    } catch (err) {
-      setError('Something went wrong. Please try again later.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  } catch (err) {
+    setError('Something went wrong. Please try again later.');
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleCopy = () => {
     if (transcript) {
