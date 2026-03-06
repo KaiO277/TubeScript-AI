@@ -4,18 +4,24 @@ import { FileText, Copy, Download, Sparkles, CheckCircle2, PlayCircle, Loader2 }
 
 interface TranscriptResultProps {
   transcript: string | null;
+  fullResult: any | null;
   loading: boolean;
   onCopy: () => void;
   onDownload: () => void;
   copied: boolean;
+  viewMode: 'transcript' | 'json';
+  setViewMode: (mode: 'transcript' | 'json') => void;
 }
 
 export const TranscriptResult: React.FC<TranscriptResultProps> = ({ 
   transcript, 
+  fullResult,
   loading, 
   onCopy, 
   onDownload, 
-  copied 
+  copied,
+  viewMode,
+  setViewMode
 }) => {
   return (
     <section className="w-full max-w-5xl px-6 pb-24">
@@ -39,6 +45,20 @@ export const TranscriptResult: React.FC<TranscriptResultProps> = ({
           </div>
           
           <div className="flex items-center gap-2">
+            <div className="flex bg-white/5 rounded-xl p-1 mr-2">
+              <button 
+                onClick={() => setViewMode('transcript')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${viewMode === 'transcript' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-slate-200'}`}
+              >
+                Transcript
+              </button>
+              <button 
+                onClick={() => setViewMode('json')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${viewMode === 'json' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-slate-200'}`}
+              >
+                JSON Result
+              </button>
+            </div>
             <button 
               onClick={onCopy}
               disabled={!transcript}
@@ -93,9 +113,15 @@ export const TranscriptResult: React.FC<TranscriptResultProps> = ({
                 className="p-8 md:p-10"
               >
                 <div className="prose prose-invert max-w-none">
-                  <p className="text-slate-300 leading-relaxed whitespace-pre-wrap font-mono text-sm">
-                    {transcript}
-                  </p>
+                  {viewMode === 'transcript' ? (
+                    <p className="text-slate-300 leading-relaxed whitespace-pre-wrap font-mono text-sm">
+                      {transcript}
+                    </p>
+                  ) : (
+                    <pre className="text-blue-400 leading-relaxed overflow-x-auto font-mono text-xs bg-black/40 p-6 rounded-2xl border border-white/5">
+                      {JSON.stringify(fullResult, null, 2)}
+                    </pre>
+                  )}
                 </div>
               </motion.div>
             ) : (
