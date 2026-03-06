@@ -15,7 +15,7 @@ async function startServer() {
   // API Route for transcription
   // This is where the user can "attach" their real API logic
   app.post("/transcript", async (req, res) => {
-    const { url } = req.body; // ✅ nhận url
+    const { url } = req.body;
 
     if (!url) {
       return res.status(400).json({ error: "YouTube URL is required" });
@@ -24,12 +24,20 @@ async function startServer() {
     console.log(`Received request for URL: ${url}`);
 
     try {
-      const externalResponse = await fetch("http://127.0.0.1:8000/transcript", {
+      const externalResponse = await fetch("http://127.0.0.1:8000/api/process-video", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": "Bearer dummy_token"
         },
-        body: JSON.stringify({ url }), // ✅ gửi url cho FastAPI
+        body: JSON.stringify({
+          url: url,
+          model_size: "base",
+          max_words: 2000,
+          generate_story: false,
+          story_total_words: 20000,
+          story_chapters: 20
+        }),
       });
 
       if (!externalResponse.ok) {
@@ -42,8 +50,7 @@ async function startServer() {
       }
 
       const data = await externalResponse.json();
-
-      res.json(data); // trả nguyên response FastAPI
+      res.json(data);
 
     } catch (error) {
       console.error("Error calling FastAPI:", error);

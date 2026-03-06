@@ -29,8 +29,7 @@ export const Home: React.FC = () => {
 
     try {
       // 2. Gọi thẳng đến Server Express (Port 3000)
-      // Lưu ý: Nếu đã cấu hình proxy trong vite.config.ts thì để nguyên '/transcript'
-      const response = await fetch('http://localhost:3000/transcript', { 
+      const response = await fetch('/transcript', { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,8 +46,8 @@ export const Home: React.FC = () => {
       const data = await response.json();
 
       // 4. Kiểm tra logic success/error từ API trả về
-      if (data.status === "success") {
-        setTranscript(data.transcript);
+      if (data.success) {
+        setTranscript(data.result.transcript);
       } else {
         setError(data.message || "Không tìm thấy transcript cho video này.");
       }

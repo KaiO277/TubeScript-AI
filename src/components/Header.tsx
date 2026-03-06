@@ -18,9 +18,8 @@ export const Header: React.FC = () => {
           <a href="#" className="text-slate-400 hover:text-white text-sm font-medium transition-colors">Pricing</a>
         </nav>
         <div className="flex items-center gap-4">
-          <Link to="/login" className="hidden sm:block text-slate-300 hover:text-white text-sm font-bold px-4 py-2 transition-colors">Login</Link>
           <button className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-5 py-2.5 rounded-lg transition-all shadow-lg shadow-blue-600/20 active:scale-95">
-            Sign Up
+            Get Started
           </button>
         </div>
       </div>
